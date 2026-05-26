@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <body style="margin: 0; background: #000; overflow: hidden">
+    <canvas id="game"></canvas>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      if (!params.get("name")) window.location.href = "index.html";
+
+      // Carregar as novas imagens
+      const bodyImg = new Image();
+      bodyImg.src = "skins/body_worms.png";
+      const headImg = new Image();
+      headImg.src = "skins/head_worms.png";
+
+      const socket = io();
+      const canvas = document.getElementById("game");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      socket.emit("join", {
+        name: params.get("name"),
+        skin: params.get("skin"),
+      });
+      socket.on("die", () => (window.location.href = "index.html"));
+
+      socket.on("update", (data) => {
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const me = data.players[socket.id];
+        if (!me) return;
+
+        ctx.translate(canvas.width / 2 - me.x, canvas.height / 2 - me.y);
+
+        // Borda do Mapa
+        ctx.strokeStyle = "red";
+        ctx.lineWidth = 10;
+        ctx.strokeRect(0, 0, 4000, 4000);
+
+        // Comida
+        data.foods.forEach((f) => {
+          ctx.fillStyle = f.color;
+          ctx.beginPath();
+          ctx.arc(f.x, f.y, 6, 0, 7);
+          ctx.fill();
+        });
+
+        // DESENHO DO VERME (Substituindo o stroke pelo drawImage)
+        for (let id in data.players) {
+          let p = data.players[id];
+
+          // Desenha o corpo segmento por segmento
+          p.body.forEach((b) => {
+            ctx.drawImage(bodyImg, b.x - 15, b.y - 15, 30, 30);
+          });
+
+          // Desenha a cabeça
+          let head = p.body[p.body.length - 1];
+          ctx.drawImage(headImg, head.x - 20, head.y - 20, 40, 40);
+
+          // Nome
+          ctx.fillStyle = "white";
+          ctx.textAlign = "center";
+          ctx.fillText(p.name, head.x, head.y - 30);
+        }
+      });
+
+      window.onmousemove = (e) =>
+        socket.emit(
+          "setAngle",
+          Math.atan2(
+            e.clientY - canvas.height / 2,
+            e.clientX - canvas.width / 2
+          )
+        );
+    </script>
+  </body>
+</html>
