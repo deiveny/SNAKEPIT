@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ZONA DE VERMES</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: sans-serif;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        overflow: hidden;
+        background: radial-gradient(circle, #222, #000);
+      }
+
+      /* Título com Brilho Neon */
+      h1 {
+        font-size: 48px;
+        text-transform: uppercase;
+        text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc, 0 0 30px #00ffcc;
+        animation: pulse 2s infinite;
+      }
+
+      /* Logo com Efeito de Brilho Dinâmico */
+      .logo {
+        width: 180px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        filter: drop-shadow(0 0 15px rgba(0, 255, 204, 0.6));
+        animation: flash 3s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+          text-shadow: 0 0 10px #00ffcc;
+        }
+        50% {
+          transform: scale(1.05);
+          text-shadow: 0 0 25px #00ffcc, 0 0 40px #00ffcc;
+        }
+      }
+
+      @keyframes flash {
+        0%,
+        100% {
+          filter: drop-shadow(0 0 10px rgba(0, 255, 204, 0.5));
+        }
+        50% {
+          filter: drop-shadow(0 0 30px rgba(0, 255, 204, 0.9));
+        }
+      }
+
+      .skin-option {
+        width: 40px;
+        height: 40px;
+        margin: 5px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 3px solid transparent;
+        display: inline-block;
+      }
+      .selected {
+        border: 3px solid white;
+        transform: scale(1.2);
+      }
+      #skinContainer {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: 300px;
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>ZONA DE VERMES</h1>
+    <img src="imagen/logo.png" class="logo" />
+
+    <input
+      id="nameInput"
+      placeholder="Seu Nome"
+      style="padding: 10px; width: 200px; text-align: center"
+    />
+
+    <h3>Escolha sua cor:</h3>
+    <div id="skinContainer">
+      <div
+        class="skin-option selected"
+        style="background: lime"
+        onclick="selectSkin('lime', this)"
+      ></div>
+      <div
+        class="skin-option"
+        style="background: red"
+        onclick="selectSkin('red', this)"
+      ></div>
+      <div
+        class="skin-option"
+        style="background: blue"
+        onclick="selectSkin('blue', this)"
+      ></div>
+    </div>
+
+    <button
+      onclick="entrar()"
+      style="padding: 10px 30px; margin-top: 20px; cursor: pointer"
+    >
+      JOGAR
+    </button>
+
+    <script>
+      let selectedSkin = "lime";
+      function selectSkin(color, el) {
+        document
+          .querySelectorAll(".skin-option")
+          .forEach((e) => e.classList.remove("selected"));
+        el.classList.add("selected");
+        selectedSkin = color;
+      }
+      function entrar() {
+        const name = document.getElementById("nameInput").value || "Corredor";
+        window.location.href =
+          "game.html?name=" +
+          encodeURIComponent(name) +
+          "&skin=" +
+          selectedSkin;
+      }
+    </script>
+  </body>
+</html>
